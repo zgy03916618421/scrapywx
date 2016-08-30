@@ -5,13 +5,10 @@
 'use strict'
 var syncReuest = require('sync-request');
 var MongoClent = require('mongodb').MongoClient;
-var redis = require('redis'),
+/*var redis = require('redis'),
     client = redis.createClient(6379,'192.168.100.2',{]});
-client.on('connect',function () {
-    console.log('connect redis [%s:%s] success!',config.redis.host,config.redis.port);
-})
 
-var request = require('request');
+//var request = require('request');
 var wxConfig ={
     appID : 'wx3c1e9fdd84a88826',
     appsecret : '73544f42698c7564deeff273e9ae0091',
