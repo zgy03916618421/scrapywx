@@ -5,6 +5,11 @@
 'use strict'
 var syncReuest = require('sync-request');
 var MongoClent = require('mongodb').MongoClient;
+var wxConfig ={
+    appID : 'wx3c1e9fdd84a88826',
+    appsecret : '73544f42698c7564deeff273e9ae0091',
+    token :'LndattneiQ5e4TU6xAfdRT18i5wN5kDMXcSe3NWoaWH_2y-7z5GoVWQADKRtUSrVmkKyci9Cnv2wxVB4hycpg5nkW6e0RyeHPxcu6lWkGT_bUp4YY9P2P3YCCfr8xH0mLUIgAEAOXL'
+}
 /*var redis = require('redis'),
     client = redis.createClient(6379,'192.168.100.2',{]});
 
@@ -49,14 +54,20 @@ function expire(key,time ) {
     }
 }
 MongoClent.connect('mongodb://192.168.100.2:27017/wechatUser',function (err,db) {
-    /*var token = yield get("scrapy_token");
-    if (token == null){
-        var tresult = syncReuest('GET','https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='+config.appID+'&secret='+config.appsecret);
-        var result = JSON.parse(tresult.getBody().toString());
-        token = result.access_token;
-        yield set('scrapy_token',token);
-        yield expire('scrapy_token',7000);
-    }*/
+    var cursor = db.collection('openid').find();
+    cursor.each(function (err,doc) {
+        var openid = doc.openid;
+        var res = syncReuest('GET','https://api.weixin.qq.com/cgi-bin/user/info?access_token='+wxConfig.token+'&openid='+openid);
+        var result = JSON.parse(res.getBody().toString());
+        result['status'] = 'enable';
+        result['createtime'] = new Date().toLocaleString();
+        db.collection('userInfo').insertOne(result,function (err,rs) {
+            console.log('insert one');
+
+        })
+    })
+})
+/*MongoClent.connect('mongodb://192.168.100.2:27017/wechatUser',function (err,db) {
     var cursor = db.collection('usrlist').find();
     cursor.each(function (err,doc) {
         if(doc != null){
@@ -75,4 +86,4 @@ var getuserInfo = function (openid,cb) {
         doc['createtime'] = new Date();
         cb();
     })
-}
+}*/
